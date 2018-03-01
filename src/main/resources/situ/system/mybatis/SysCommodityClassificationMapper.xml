@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="situ.system.mapper.SysCommodityClassificationMapper">
+
+<!-- 查询结果映射 -->
+	<resultMap id="BaseResultMap" type="situ.system.model.SysCommodityClassificationModel">
+		<result column="id" property="id" />
+		<result column="classification_name" property="classificationName" />
+		<result column="classification_code" property="classificationCode" />
+		<result column="descr" property="descr" />
+		<result column="parent_code" property="parentCode" />
+		<result column="createtime" property="createTime" />
+		<result column="updatetime" property="updateTime" />
+		<result column="creator" property="creator" />
+		<result column="updater" property="updater" />
+		<result column="isdelete" property="isDelete" />
+		<result column="iseffect" property="isEffect" />
+	</resultMap>
+
+<!-- 表的字段列表  -->
+	<sql id="Base_Column_List">
+	   id, classification_name, classification_code, descr, parent_code, createtime, updatetime, creator, updater, isdelete, iseffect 		
+	</sql>
+<!-- 查询条件，where从句 -->
+	<sql id="Example_Where_Clause">
+		where 1=1
+		<trim suffixOverrides=",">
+			<if test="id != null">
+				and id = #{id}
+			</if>					 	
+			<if test="classificationName != null and classificationName != ''">
+				and classification_name  = #{classificationName}
+			</if>
+			
+			<if test="classificationCode != null and classificationCode != ''">
+			   and  classification_code = #{classificationCode}
+			</if>		
+			<if test="descr != null and descr != ''">			
+			   and descr CONCAT('%', #{descr}, '%')
+			</if>						
+			<if test="parentCode != null and parentCode != ''">
+				and parent_code  = #{parentCode}
+			</if>
+			
+			<if test="createTime != null and createTime != ''">
+				and createtime = #{createTime}
+			</if>			
+			<if test="updateTime != null and updateTime != ''">
+				and updatetime = #{updateTime}
+			</if>			
+			<if test="creator != null and creator != ''">
+				and creator = #{creator}
+			</if>			
+			<if test="updater != null and updater != ''">
+				and updater = #{updater}
+			</if>
+			<if test="isDelete != null">
+				and isdelete = #{isDelete}
+			</if>
+			<if test="isEffect != null">
+				and iseffect = #{isEffect}
+			</if>			 
+		</trim>
+	</sql>
+    <!-- 查询商品分类总数 -->
+    <select id="selectCount" resultType="java.lang.Integer" parameterType="Object">
+		select count(1) from commodity_classification
+	    <include refid="Example_Where_Clause" />
+	</select>
+	<!-- 插入记录 -->
+	<insert id="insert"  parameterType="Object">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into commodity_classification
+		(classification_name, classification_code, descr, parent_code, 
+		createtime, updatetime, creator, updater, isdelete, iseffect)values
+		(#{classificationName}, #{classificationCode}, #{descr},#{parentCode},
+		 #{createTime}, #{updateTime},#{creator}, #{updater}, #{isDelete}, #{isEffect})
+		<!--  now(), now(),一般不用这种格式，一般是在java中将时间取出来  -->
+	</insert>
+	<!-- 查询商品分类列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from commodity_classification
+		<include refid="Example_Where_Clause" />
+	    <if test="pager.orderCondition != null and pager.orderCondition != ''">
+			${pager.orderCondition}
+		</if>
+		<if test="pager.mysqlQueryCondition != null and pager.mysqlQueryCondition != ''">
+			${pager.mysqlQueryCondition}
+		</if>
+	</select>
+	<!-- 查询系统用户列表 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object"> 
+		select <include refid="Base_Column_List" />
+		from commodity_classification
+		<include refid="Example_Where_Clause" />
+		<if test="pager.orderCondition != null and pager.orderCondition != ''">
+			${pager.orderCondition}
+		</if>
+	</select>
+	
+	
+</mapper>

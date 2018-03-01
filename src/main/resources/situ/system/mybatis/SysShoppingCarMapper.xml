@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="situ.system.mapper.SysShoppingCarMapper">
+
+	<!-- Result Map 已经对应好 -->
+	<resultMap id="BaseResultMap" type="situ.system.model.SysShoppingCarModel">
+		<result column="id" property="id"/>
+		<result column="user_id" property="userId" />
+		<result column="commodity_id" property="commodityId" />
+		<result column="commodity_number" property="commodityNumber" />
+		
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="creator" property="creator" />
+		<result column="updater" property="updater" />
+		<result column="is_delete" property="isDelete" />
+		<result column="is_effect" property="isEffect" />		
+	</resultMap>
+	<!-- user_information table all fields -->
+	<sql id="Base_Column_List">
+		 id, user_id, commodity_id, commodity_number, create_time, update_time, creator, updater, is_delete, is_effect
+	</sql>
+   <!-- 在model类中对应的字段
+       private Integer userId;
+	   private Integer commodityId;
+	   private Integer commodityNumber;-->
+	<!-- 在数据库中字段 -->
+	<!-- id, user_id, commodity_id, commodity_number, create_time, update_time, creator, updater, is_delete, is_effect -->
+	<!-- 查询条件 -->
+	<sql id="Example_Where_Clause">
+		where 1=1
+		<trim suffixOverrides=",">
+			<if test="id != null">
+				and id = #{id}
+			</if>		 	
+			<if test="userId != null">
+				and user_id = #{userId}
+			</if>	
+			<if test=" commodityId!= null">
+				and commodity_id = #{commodityId}
+			</if>	
+			<if test="id != null">
+				and commodity_number = #{commodityNumber}
+			</if>	
+							
+			<if test="createTime != null and createTime != ''">
+				and create_time  = #{createTime}
+			</if>
+			
+			<if test="updateTime != null and updateTime != ''">
+				and update_time = #{updateTime}
+			</if>
+			
+			<if test="creator != null and creator != ''">
+				and creator = #{creator}
+			</if>
+			
+			<if test="updater != null and updater != ''">
+				and updater = #{updater}
+			</if>			
+			<if test="isDelete != null">
+				and is_delete = #{isDelete}
+			</if>
+			<if test="isEffect != null">
+				and is_effect = #{isEffect}
+			</if>			 
+		</trim>
+	</sql>
+
+	<!-- 插入记录  , 该语句已经验证成功，请勿修改-->
+	<insert id="insert"  parameterType="Object">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into shopping_car
+		(user_id, commodity_id, commodity_number, create_time, update_time, creator, updater, is_delete, is_effect)
+		values  
+		(#{userId}, #{commodityId}, #{commodityNumber},
+		#{createTime}, #{updateTime}, #{creator}, #{updater}, #{isDelete}, #{isEffect})
+	</insert>	
+	<!-- 删除记录 -->
+	<delete id="delete" parameterType="Object">
+		delete from shopping_car where id = #{id}
+	</delete>
+	
+	<delete id="deleteModel" parameterType="Object">
+		delete from shopping_car
+		<include refid="Example_Where_Clause" />
+	</delete>
+
+	<!-- 根据id，修改记录 -->
+	<update id="update" parameterType="Object">
+		update sys_user set
+		update_time = now(), update_by = #{updateBy}, deleted = #{deleted}, state = #{state}, 
+		order_by = #{orderBy}, name = #{name}, code = #{code}, descr = #{descr}, type=#{type}
+		, email = #{email}, pwd = #{pwd}, admin = #{admin}, login_count = #{loginCount}, login_time = #{loginTime}
+		where id = #{id}
+	</update>
+
+	<!-- 修改记录，只修改只不为空的字段 -->
+	<update id="updateActive" parameterType="Object">
+		update shopping_car set
+		<trim suffixOverrides=",">
+			<if test="userId != null">
+				 user_id = #{userId},
+			</if>	
+			<if test=" commodityId!= null">
+				 commodity_id = #{commodityId},
+			</if>	
+			<if test="id != null">
+				 commodity_number = #{commodityNumber},
+			</if>	
+							
+			<if test="createTime != null and createTime != ''">
+			     create_time  = #{createTime},
+			</if>
+			
+			<if test="updateTime != null and updateTime != ''">
+				 update_time = #{updateTime},
+			</if>
+			
+			<if test="creator != null and creator != ''">
+				 creator = #{creator},
+			</if>
+			
+			<if test="updater != null and updater != ''">
+				 updater = #{updater},
+			</if>			
+			<if test="isDelete != null">
+				 is_delete = #{isDelete},
+			</if>
+			<if test="isEffect != null">
+				 is_effect = #{isEffect},
+			</if>			 
+		</trim>
+		   where id = #{id}
+	</update>
+	<!-- 根据id查询 系统用户 -->
+	<select id="selectId" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from shopping_car where id = #{id}
+	</select>
+
+	<!-- 系统用户 列表总数 -->
+	<select id="selectCount" resultType="java.lang.Integer" parameterType="Object">
+		select count(1) from shopping_car <!-- where id = #{id} -->
+	    <include refid="Example_Where_Clause" /> 
+	</select>
+
+	<!-- 查询系统用户列表 -->
+	<select id="selectModel" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from commodity_information
+		<include refid="Example_Where_Clause" />
+		<if test="pager.orderCondition != null and pager.orderCondition != ''">
+			${pager.orderCondition}
+		</if>
+		<if test="pager.mysqlQueryCondition != null and pager.mysqlQueryCondition != ''">
+			${pager.mysqlQueryCondition}
+		</if>
+	</select>
+	
+	<!-- 查询全部的商品，该查询语句可以设置排序的功能 -->
+	<select id="selectAll" resultMap="BaseResultMap" parameterType="Object">
+		select <include refid="Base_Column_List" />
+		from shopping_car
+		<include refid="Example_Where_Clause" />
+<!-- 		where deleted = 0 -->
+		<if test="pager.orderCondition != null and pager.orderCondition != ''">
+			${pager.orderCondition}
+		</if>
+	</select>
+
+</mapper>   
